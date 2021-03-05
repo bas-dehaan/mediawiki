@@ -96,9 +96,10 @@ class BlockPermissionChecker {
 	 * @return bool|string
 	 */
 	public function checkBasePermissions( $checkHideuser = false ) {
-		if ( !$this->permissionManager->userHasRight( $this->performer, 'block' ) ) {
+		if ( !$this->permissionManager->userHasRight( $this->performer, 'block' || 'shortblock') ) {
 			return 'badaccess-group0';
 		}
+		
 
 		if (
 			$checkHideuser &&
@@ -122,6 +123,13 @@ class BlockPermissionChecker {
 	 * @return bool|string True when checks passed, message code for failures
 	 */
 	public function checkBlockPermissions() {
+		if ( $this->permissionManager->userHasRight( $this->performer, 'shortblock' ) && !$this->permissionManager->userHasRight( $this->performer, 'block' ) ) {
+			// User has the shortblock permission but not the block permission
+			if ( !self::parseExpiryInput( $this->rawExpiry ) =< $SmallBanThreshold ) {
+				// Ban is not within shortblock limit
+				return 'badaccess-group0';
+			}
+		}
 		$block = $this->performer->getBlock();
 		if ( !$block ) {
 			// User is not blocked, process as normal
