@@ -189,6 +189,7 @@ class PermissionManager {
 		'reupload-shared',
 		'rollback',
 		'sendemail',
+		'shortblock',
 		'siteadmin',
 		'suppressionlog',
 		'suppressredirect',
